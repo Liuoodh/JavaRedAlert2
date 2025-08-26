@@ -22,6 +22,7 @@ import redAlert.shapeObjects.Building;
 import redAlert.shapeObjects.MovableUnit;
 import redAlert.shapeObjects.PowerPlant;
 import redAlert.shapeObjects.ShapeUnit;
+import redAlert.shapeObjects.Vehicle.EngineStatus;
 import redAlert.shapeObjects.soldier.Adog;
 import redAlert.shapeObjects.soldier.Engn;
 import redAlert.shapeObjects.soldier.Gi;
@@ -412,7 +413,7 @@ public class ShapeUnitResourceCenter {
 					
 					CenterPoint targetMoveLcp = bornCp.getRightDn().getRightDn().getRightDn().getRightDn();
 					CenterPoint target = PointUtil.findVehicleCanOnCpNearBy(targetMoveLcp);
-					
+					System.out.println("初次坐标"+target);
 					
 					
 					if(vehicle==VehicleEnum.AfGtnk) {
@@ -426,8 +427,13 @@ public class ShapeUnitResourceCenter {
 						
 						while(true) {
 							CenterPoint tankCp = gtank.getCurCenterPoint();
-							Thread.sleep(0);
-//							System.out.println("???"+RandomUtil.newUnitNo());
+							Thread.sleep(5);
+							if(!target.isVehicleCanOn() || gtank.engineStatus==EngineStatus.Stopped) {
+								System.out.println("二次坐标"+target);
+								target = PointUtil.findVehicleCanOnCpNearBy(targetMoveLcp);
+								gtank.moveToTarget(target);
+								
+							}
 							if(!tankCp.equals(bornCp) && !tankCp.equals(bornCp.getRightDn()) && !tankCp.equals(bornCp.getRightDn().getRightDn())) {
 								break;
 							}

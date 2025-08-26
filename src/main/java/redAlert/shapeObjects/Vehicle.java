@@ -162,6 +162,7 @@ public abstract class Vehicle extends MovableUnit implements Turnable,Attackable
 		if(!moveTarget.isVehicleCanOn()) {
 			movePath=null;
 			endTarget = null;
+			System.out.println("因此停止运行");
 			return;
 		}
 		
@@ -177,6 +178,7 @@ public abstract class Vehicle extends MovableUnit implements Turnable,Attackable
 					this.nextTarget = planMovePath.get(0);
 					this.endTarget = planMovePath.get(planMovePath.size()-1);
 					this.movePath = planMovePath;
+					setEngineStatus(EngineStatus.Started);
 //					nextTarget.addBook(this);
 					
 					//确定炮塔的旋转方向
@@ -200,6 +202,7 @@ public abstract class Vehicle extends MovableUnit implements Turnable,Attackable
 		}
 		//目标正在移动,然后指定新的目标位置
 		else {
+			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			/*
 			stopFlag = true;
 			
@@ -476,6 +479,7 @@ public abstract class Vehicle extends MovableUnit implements Turnable,Attackable
 						}else {
 							//等待
 							nextTarget = curCenterPoint;
+							System.out.println("??1");
 						}
 					}else {
 						if(isExistBuilding || isExistSolider) {
@@ -517,6 +521,7 @@ public abstract class Vehicle extends MovableUnit implements Turnable,Attackable
 							if(isBookedByOther) {
 								//等待
 								nextTarget = curCenterPoint;
+								System.out.println("??2");
 							}else {
 								boolean bookedFlag = nextTarget.addBook(this);
 								if(bookedFlag) {
@@ -526,6 +531,7 @@ public abstract class Vehicle extends MovableUnit implements Turnable,Attackable
 								}else {
 									//等待
 									nextTarget = curCenterPoint;
+									System.out.println("??3");
 								}
 							}
 						}

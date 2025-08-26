@@ -36,6 +36,7 @@ public class BuildingBloodBar extends BloodBar{
 			int height = 7+(maxBloodNum-1)*2;
 			int width = 10+(maxBloodNum-1)*4;
 			image = new BufferedImage(width,  height, BufferedImage.TYPE_INT_ARGB);
+			curFrame.setImg(image);
 		}
 		CanvasPainter.clearImage(image);
 		

@@ -76,6 +76,10 @@ public class DrawableUtil {
 	public static void drawOneShpAtPosition(GLAutoDrawable drawable,ShapeUnit shapeUnit,int viewportOffX,int viewportOffY) {
 	    
 		ShapeUnitFrame frame = shapeUnit.getCurFrame();
+		if(frame.getImg()==null) {
+			System.out.println("观察到空图片,类型:"+shapeUnit.getClass());
+		}
+		
 		int positionX = shapeUnit.getPositionX();
 	    int positionY = shapeUnit.getPositionY();
 		drawOneSufAtPosition(drawable,frame,positionX,positionY,viewportOffX,viewportOffY);
