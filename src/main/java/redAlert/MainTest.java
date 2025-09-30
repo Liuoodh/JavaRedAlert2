@@ -37,6 +37,7 @@ public class MainTest {
 		
 		//初始化鼠标指针形状图片
 		Mouse.initMouseCursor();
+
 		//初始化建造预选块
 		Place.initPlaceRect();
 		
@@ -47,6 +48,9 @@ public class MainTest {
 		}else {
 			scenePanel = new MainPanelJava();//基于JavaSwing的渲染
 		}
+
+
+
 		jf.add(BorderLayout.CENTER,scenePanel);//格式布局放中间
 		
 		//选项卡页面
