@@ -178,8 +178,9 @@ public class Mcv extends Vehicle implements TankExpandable {
 		CenterPoint cp = PointUtil.getCenterPoint(positionX+centerOffX,positionY+centerOffY);
 		cp.removeUnit(this);
 		AfCnst afCnst = new AfCnst(cp, GlobalConfig.sceneType, GlobalConfig.unitColor);
-		afCnst.mvcX = this.positionX;
-		afCnst.mvcY = this.positionY;
+		afCnst.mcvX = this.positionX;
+		afCnst.mcvY = this.positionY;
+		afCnst.setUnitColor(this.unitColor);
 		return afCnst;
 	}
 

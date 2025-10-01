@@ -50,8 +50,8 @@ public class AfCnst extends Building implements TankExpandable {
 	public int expandStatus = TANK_STATUS_NORMAL;//正常状态
 
 	// 对应基地车的坐标
-	public int mvcX;
-	public int mvcY;
+	public int mcvX;
+	public int mcvY;
 
 
 	public Mcv targetUnExpandUnit = null;//变回基地车的对象
@@ -229,7 +229,7 @@ public class AfCnst extends Building implements TankExpandable {
 	 *  \____\___\_*__\*__\
 	 *   \____\____\____\___\
 	 *    \____\____\_____\___\
-	 *  //TODO:如何计算基地车的位置使得画面和取消部署的动画最后一帧的基地车位置一致？
+	 *  //TODO:如何计算基地车的位置使得画面和取消部署的动画最后一帧的基地车位置一致？目前有一帧作用不自然的情况
 	 *  //TODO:当触发”指定位置不可达“时，基地车可能会消失？ 还未找到bug原因
 	 */
 
@@ -237,8 +237,9 @@ public class AfCnst extends Building implements TankExpandable {
 	public void afterBuildingDestroy(){
 		// 区分一下解除部署和被卖
 		if (this.expandStatus == TANK_STATUS_UNEXPANDING) {
+			CenterPoint centerPoint = PointUtil.getCenterPoint(this.mcvX, this.mcvY);
 			// 在这初始化
-			targetUnExpandUnit.init(this.curCenterPoint.x,  this.curCenterPoint.y, this.unitColor);
+			targetUnExpandUnit.init(centerPoint.x,  centerPoint.y, this.unitColor);
 			targetUnExpandUnit.setCurTurn(6);
 			targetUnExpandUnit.setTargetTurn(6);
 			Constructor.putOneShapeUnit(targetUnExpandUnit);
@@ -286,15 +287,6 @@ public class AfCnst extends Building implements TankExpandable {
 
 	}
 
-	/**
-	 * 基地占16个格子，取消部署后基地车总是面向方向6，占以下两格
-	 * __________________
-	 * \___\____\___\___\
-	 *  \____\___\_*__\*__\
-	 *   \____\____\____\___\
-	 *    \____\____\_____\___\
-	 *  //TODO:如何计算基地车的位置使得画面和取消部署的动画最后一帧的基地车位置一致
-	 */
 	@Override
 	public MovableUnit getUnexpandUnit() {
 		// 先不要初始化
