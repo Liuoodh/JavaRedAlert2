@@ -280,7 +280,7 @@ public class MainTest {
 		while(!targetPill2.end) {
 			gtank.attack(targetPill2);
 		}
-		
+
 //		-Xms1024m
 //		-XX:+UseG1GC -XX:MaxGCPauseMillis=1
 		

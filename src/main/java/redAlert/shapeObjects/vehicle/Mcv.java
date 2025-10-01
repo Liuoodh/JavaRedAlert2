@@ -9,21 +9,20 @@ import redAlert.GlobalConfig;
 import redAlert.enums.UnitColor;
 import redAlert.militaryBuildings.AfCnst;
 import redAlert.resourceCenter.ShapeUnitResourceCenter;
-import redAlert.shapeObjects.Expandable;
-import redAlert.shapeObjects.Vehicle;
+import redAlert.shapeObjects.*;
 import redAlert.utilBean.CenterPoint;
 import redAlert.utils.PointUtil;
 
 /**
  * 盟军基地车
  */
-public class Mcv extends Vehicle implements Expandable{
+public class Mcv extends Vehicle implements TankExpandable {
 
-	//------------基地车独有的变量
-	public final static int MCV_STATUS_NORMAL = 0;
-	public final static int MCV_STATUS_EXPANDING = 1;
-	
-	public int status = MCV_STATUS_NORMAL;//正常状态
+
+
+	public boolean canUnexpand = true;//基地车是否可以缩回
+
+	public int expandStatus = TANK_STATUS_NORMAL;//正常状态
 	//---------------
 	/**
 	 * 
@@ -45,7 +44,7 @@ public class Mcv extends Vehicle implements Expandable{
 	@Override
 	public void calculateNextFrame() {
 		
-		if(status==MCV_STATUS_NORMAL) {
+		if(expandStatus==TANK_STATUS_NORMAL) {
 			
 			super.calculateNextFrame();
 			
@@ -68,15 +67,13 @@ public class Mcv extends Vehicle implements Expandable{
 				super.curFrame = bodyFrames.get(curTurn);
 				return;
 			}else {
-				CenterPoint cp = PointUtil.getCenterPoint(positionX+centerOffX,positionY+centerOffY);
-				cp.removeUnit(this);
+				AfCnst afCnst = (AfCnst) getExpandBuilding();
 				ShapeUnitResourceCenter.removeOneMovableUnit(this);
 				ShapeUnitResourceCenter.removeOneUnit(this.getBloodBar());
 				this.getBloodBar().setVisible(false);
 				this.getBloodBar().setEnd(true);
 				this.setVisible(false);
 				this.setEnd(true);
-				AfCnst afCnst = new AfCnst(cp,GlobalConfig.sceneType, GlobalConfig.unitColor);
 				Constructor.putOneBuilding(afCnst);//盟军基地
 				try {
 					Thread.sleep(50);
@@ -84,8 +81,7 @@ public class Mcv extends Vehicle implements Expandable{
 				}catch (Exception e) {
 					e.printStackTrace();
 				}
-				
-				
+
 			}
 			
 		}
@@ -102,9 +98,9 @@ public class Mcv extends Vehicle implements Expandable{
 	@Override
 	public void expand() {
 		//先转到姿势6  然后移走基地车  然后放一个基地
-		
-		
-		this.status = Mcv.MCV_STATUS_EXPANDING;
+
+		transferStatus(TANK_STATUS_EXPANDING);
+
 		
 	}
 	
@@ -141,8 +137,13 @@ public class Mcv extends Vehicle implements Expandable{
 		}
 		return isCanMake;
 	}
-	
-	
+
+	@Override
+	public boolean isUnExpandable() {
+		return canUnexpand;
+	}
+
+
 	/**
 	 * 再缩回
 	 */
@@ -152,4 +153,37 @@ public class Mcv extends Vehicle implements Expandable{
 		
 	}
 
+	/**
+	 * 缩回然后移动到指定位置
+	 */
+	@Override
+	public void unexpandAndTransfer(MovableUnit targetUnit) {
+
+
+	}
+
+	@Override
+	public MovableUnit getUnexpandUnit() {
+		return this;
+	}
+
+	@Override
+	public Building getExpandBuilding() {
+		CenterPoint cp = PointUtil.getCenterPoint(positionX+centerOffX,positionY+centerOffY);
+		cp.removeUnit(this);
+		AfCnst afCnst = new AfCnst(cp, GlobalConfig.sceneType, GlobalConfig.unitColor);
+		afCnst.mvcX = this.positionX;
+		afCnst.mvcY = this.positionY;
+		return afCnst;
+	}
+
+	@Override
+	public void transferStatus(int newStatus) {
+		this.expandStatus = newStatus;
+	}
+
+	@Override
+	public int getExpandStatus() {
+		return expandStatus;
+	}
 }

@@ -5,12 +5,16 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import redAlert.Constructor;
 import redAlert.ShapeUnitFrame;
 import redAlert.enums.ConstConfig;
 import redAlert.enums.UnitColor;
 import redAlert.resourceCenter.ShapeUnitResourceCenter;
 import redAlert.resourceCenter.ShpResourceCenter;
 import redAlert.shapeObjects.Building;
+import redAlert.shapeObjects.MovableUnit;
+import redAlert.shapeObjects.TankExpandable;
+import redAlert.shapeObjects.vehicle.Mcv;
 import redAlert.utilBean.CenterPoint;
 import redAlert.utils.PointUtil;
 
@@ -18,7 +22,7 @@ import redAlert.utils.PointUtil;
  * 盟军基地车
  * 
  */
-public class AfCnst extends Building{
+public class AfCnst extends Building implements TankExpandable {
 	/**
 	 * shp文件基础名
 	 */
@@ -32,6 +36,23 @@ public class AfCnst extends Building{
 	 * 夹箱子动画帧
 	 */
 	public List<ShapeUnitFrame> fetchCrateFrames;
+
+	/**
+	 * 是否可变回基地车
+	 */
+	public boolean canUnexpand = true;
+
+	/**
+	 * 基地的状态
+	 */
+	public int expandStatus = TANK_STATUS_NORMAL;//正常状态
+
+	// 对应基地车的坐标
+	public int mvcX;
+	public int mvcY;
+
+
+	public Mcv targetUnExpandUnit = null;//变回基地车的对象
 	
 	
 	public AfCnst(SceneType sceneType,UnitColor unitColor,int mouseX,int mouseY) {
@@ -161,9 +182,15 @@ public class AfCnst extends Building{
 	 */
 	@Override
 	public void calculateNextFrame() {
-		
+		if(expandStatus==TANK_STATUS_UNEXPANDING) {
+			if(this.stage!=BuildingStage.Selling) {
+				this.setStage(BuildingStage.Selling);
+			}
+			super.calculateNextFrame();
+			return;
+		}
 		super.calculateNextFrame();
-		
+
 		//夹箱子动画
 		if(toFetchCrate) {
 			if(ShapeUnitResourceCenter.isPowerOn) {
@@ -190,6 +217,87 @@ public class AfCnst extends Building{
 	public void setToFetchCrate(boolean toFetchCrate) {
 		this.toFetchCrate = toFetchCrate;
 	}
-	
-	
+
+
+	//TODO:当触发”指定位置不可达“时，基地车会消失
+	// 还没有找到bug为什么出现
+	@Override
+	public void afterBuildingDestroy(){
+		// 区分一下解除部署和被卖
+		if (this.expandStatus == TANK_STATUS_UNEXPANDING) {
+
+			Constructor.putOneShapeUnit(targetUnExpandUnit);
+//			System.out.println();
+
+		}else{
+			super.afterBuildingDestroy();
+		}
+	}
+
+	@Override
+	public void expand() {
+
+	}
+
+	@Override
+	public void unexpand() {
+		transferStatus(TankExpandable.TANK_STATUS_UNEXPANDING);
+	}
+
+	@Override
+	public boolean isExpandable() {
+		return false;
+	}
+
+	@Override
+	public boolean isUnExpandable() {
+		return canUnexpand;
+	}
+
+
+	@Override
+	public void unexpandAndTransfer(MovableUnit targetUnit) {
+		// 卖掉基地然后放个基地车
+		Constructor.playOneMusic("uselbuil");
+		this.unexpand();
+		this.targetUnExpandUnit = (Mcv) targetUnit;
+
+	}
+
+	/**
+	 * 基地占16个格子，取消部署后基地车总是面向方向6，占以下两格
+	 * __________________
+	 * \___\____\___\___\
+	 *  \____\___\_*__\*__\
+	 *   \____\____\____\___\
+	 *    \____\____\_____\___\
+	 *  //TODO:如何计算基地车的位置使得画面和取消部署的动画最后一帧的基地车位置一致
+	 */
+	@Override
+	public MovableUnit getUnexpandUnit() {
+
+		Mcv mcv = new Mcv(this.curCenterPoint.x,  this.curCenterPoint.y, this.unitColor);
+		mcv.setCurTurn(6);
+		mcv.setTargetTurn(6);
+
+		return mcv;
+	}
+
+
+	//TODO:
+
+	@Override
+	public Building getExpandBuilding() {
+		return this;
+	}
+
+	@Override
+	public void transferStatus(int newStatus) {
+		this.expandStatus = newStatus;
+	}
+
+	@Override
+	public int getExpandStatus() {
+		return expandStatus;
+	}
 }

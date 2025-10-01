@@ -19,14 +19,8 @@ import redAlert.enums.MouseStatus;
 import redAlert.event.ConstructEvent;
 import redAlert.event.EventHandlerManager;
 import redAlert.resourceCenter.ShapeUnitResourceCenter;
-import redAlert.shapeObjects.Bloodable;
-import redAlert.shapeObjects.Building;
+import redAlert.shapeObjects.*;
 import redAlert.shapeObjects.Building.BuildingStage;
-import redAlert.shapeObjects.Expandable;
-import redAlert.shapeObjects.MovableUnit;
-import redAlert.shapeObjects.ShapeUnit;
-import redAlert.shapeObjects.Soldier;
-import redAlert.shapeObjects.Vehicle;
 import redAlert.utilBean.CenterPoint;
 import redAlert.utilBean.Coordinate;
 import redAlert.utilBean.LittleCenterPoint;
@@ -115,6 +109,9 @@ public class MouseEventDeal {
 									ShapeUnitResourceCenter.unselectBuilding();
 									mouseBloodable = selectedBuilding;
 									ShapeUnitResourceCenter.selectOneBuilding(selectedBuilding);
+
+
+
 								}
 							}
 							
@@ -246,12 +243,25 @@ public class MouseEventDeal {
 						 * 用户指挥单位进行移动
 						 */
 						if(RuntimeParameter.mouseStatus==MouseStatus.UnitMove) {
+
 							CenterPoint targetCp = PointUtil.getCenterPoint(coord.getMapX(), coord.getMapY());
 							List<MovableUnit> units = ShapeUnitResourceCenter.selectedMovableUnits;
+							Building selectedBuilding = ShapeUnitResourceCenter.selectedBuilding;
 							if(units.size()==1) {
 								MovableUnit moveUnit = units.get(0);
 								//不适用AWT线程来控制移动   不然可能会卡屏
 								//所以在线程池中执行
+								// 判断一下移动的单位是不是从部署建筑变化而来
+								if(moveUnit instanceof TankExpandable && selectedBuilding instanceof TankExpandable
+										&& ((TankExpandable) selectedBuilding).getExpandStatus()==TankExpandable.TANK_STATUS_NORMAL) {
+									//建筑卖掉原地显示载具
+
+									TankExpandable exBuilding = (TankExpandable) selectedBuilding;
+									exBuilding.unexpandAndTransfer(moveUnit);
+									ShapeUnitResourceCenter.unselectBuilding();
+								}
+
+
 								Thread thread = new Thread() {
 									public void run() {
 										MoveUtil.move(moveUnit, targetCp);
@@ -300,6 +310,10 @@ public class MouseEventDeal {
 							resetMouseStatus(coord);
 							return;
 						}
+
+						/**
+						 * 用户预选
+						 */
 						
 						/**
 						 * 贱卖建筑
@@ -565,7 +579,21 @@ public class MouseEventDeal {
 				Building selectedBuilding = ShapeUnitResourceCenter.selectedBuilding;
 				if(selectedBuilding!=null) {//存在已选中的建筑
 					if(selectedBuilding.equals(unit)) {
-						RuntimeParameter.mouseStatus = MouseStatus.Idle;
+						//如果选中的建筑是可部署的,则看是否可以取消部署
+						if(selectedBuilding instanceof TankExpandable) {
+							TankExpandable ex = (TankExpandable) selectedBuilding;
+							if (ex.isUnExpandable()) {
+								RuntimeParameter.mouseStatus = MouseStatus.UnitMove;
+								//创建一个该建筑关联的取消部署的载具
+								MovableUnit movableUnit = ex.getUnexpandUnit();
+								ShapeUnitResourceCenter.selectedMovableUnits.add(movableUnit);
+
+							}else{
+								RuntimeParameter.mouseStatus = MouseStatus.Idle;
+							}
+						}else{
+							RuntimeParameter.mouseStatus = MouseStatus.Idle;
+						}
 					}else {
 						RuntimeParameter.mouseStatus = MouseStatus.PreSingleSelect;//单选状态
 					}
