@@ -1,5 +1,7 @@
 package redAlert.shapeObjects;
 
+import redAlert.utilBean.CenterPoint;
+
 /**
  * @Author:
  * @Date: 2025-10-01-12:27
@@ -16,7 +18,7 @@ public interface TankExpandable extends Expandable{
     int TANK_STATUS_UNEXPANDING = 2;
 
 
-    void unexpandAndTransfer(MovableUnit movableUnit);
+    void unexpandAndTransfer(MovableUnit movableUnit, CenterPoint moveTargetCp);
     MovableUnit getUnexpandUnit();
 
     Building getExpandBuilding();

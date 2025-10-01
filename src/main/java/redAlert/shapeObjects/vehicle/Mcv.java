@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import redAlert.Constructor;
-import redAlert.GameContext;
 import redAlert.GlobalConfig;
 import redAlert.enums.UnitColor;
 import redAlert.militaryBuildings.AfCnst;
@@ -28,6 +27,13 @@ public class Mcv extends Vehicle implements TankExpandable {
 	 * 
 	 */
 	public Mcv(int positionX,int positionY,UnitColor unitColor) {
+		init(positionX,positionY,unitColor);
+	}
+
+	public Mcv() {
+	}
+
+	public void init(int positionX,int positionY,UnitColor unitColor){
 		super.initVehicleParam(positionX,positionY, unitColor, "mcv");
 		//定义名称
 		super.unitName = "盟军基地车";
@@ -157,7 +163,7 @@ public class Mcv extends Vehicle implements TankExpandable {
 	 * 缩回然后移动到指定位置
 	 */
 	@Override
-	public void unexpandAndTransfer(MovableUnit targetUnit) {
+	public void unexpandAndTransfer(MovableUnit targetUnit,CenterPoint cp) {
 
 
 	}

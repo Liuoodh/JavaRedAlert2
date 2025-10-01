@@ -375,6 +375,7 @@ public abstract class Building extends ShapeUnit implements Bloodable{
 	}
 
 	public void endBuilding(){
+		this.end = true;
 		setVisible(false);
 		setEnd(true);
 		getCurCenterPoint().setBuilding(null);//上边的物品
@@ -385,7 +386,7 @@ public abstract class Building extends ShapeUnit implements Bloodable{
 		this.getBone().setVisible(false);
 		this.getBone().setEnd(true);
 
-		this.end = true;
+
 		ShapeUnitResourceCenter.removeOneUnit(bone);
 		getCurCenterPoint().buildingAreaType = BuildingAreaType.None;
 
@@ -393,7 +394,7 @@ public abstract class Building extends ShapeUnit implements Bloodable{
 	}
 	/**
 	 * 留给子类重写
-	 * 建筑被摧毁后做一些事情,默认播放语音
+	 * 建筑被摧毁（卖掉）后做一些事情,默认播放语音
 	 * building应该有生命周期的概念
 	 */
 	public void  afterBuildingDestroy() {

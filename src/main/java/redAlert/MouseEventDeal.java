@@ -257,8 +257,10 @@ public class MouseEventDeal {
 									//建筑卖掉原地显示载具
 
 									TankExpandable exBuilding = (TankExpandable) selectedBuilding;
-									exBuilding.unexpandAndTransfer(moveUnit);
+									exBuilding.unexpandAndTransfer(moveUnit,targetCp);
 									ShapeUnitResourceCenter.unselectBuilding();
+									return;
+
 								}
 
 
@@ -586,6 +588,7 @@ public class MouseEventDeal {
 								RuntimeParameter.mouseStatus = MouseStatus.UnitMove;
 								//创建一个该建筑关联的取消部署的载具
 								MovableUnit movableUnit = ex.getUnexpandUnit();
+
 								ShapeUnitResourceCenter.selectedMovableUnits.add(movableUnit);
 
 							}else{
